@@ -93,7 +93,10 @@ public class FullPacket {
 		packet.hasHeader(ip4);
 		packet.hasHeader(udp);
 		JPacket defragPacket = null;
-
+//		if(udp.isInitialized() && udp.destination() == 514) {
+//			System.out.println("port dst : "+ udp.destination());
+//			
+//		}
 		if(ip4.isInitialized()) {
 			id = ip4.id();
 			String key = "" + ip4.id() + ip4.sourceToInt() +    // key id to identify IP fragments
@@ -196,9 +199,16 @@ public class FullPacket {
 
 
 	public boolean isJGroupsPacket() {
+		int port = 0;
+//		try {
+//			port = udp.isInitialized() ? udp.destination(): 0;
+//		} catch (NumberFormatException e) {
+//		}
+		
+//		if((port == 514) || (buf != null && buf.length > 0)) {
 		if(buf != null && buf.length > 0) {
 			short version = (short) ((buf[0] << 8) + buf[1]);
-			return version == 0x1280 || version == 0x12C0 || version == 0x1301 ;  // support JGroups version 2.10 2.11, 2.12
+			return port == 514 || version == 0x1280 || version == 0x12C0 || version == 0x1301 ;  // support JGroups version 2.10 2.11, 2.12
 		} else {
 			return false;
 		}

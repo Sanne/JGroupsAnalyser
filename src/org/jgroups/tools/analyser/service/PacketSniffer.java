@@ -31,15 +31,19 @@ public class PacketSniffer extends Thread {
 	private int timeout = 1; 
 	private Pcap pcap;
 	PcapPacketHandler<String> jpacketHandler = null;
-
+	private long nbPackets;
+	private int loop;
+	
 	public PacketSniffer(PcapIf device) {
 		this.device = device;
 		initNic();
+		loop = -1;
 	}
 
 	public PacketSniffer(String pcapFile) {
 		this.pcapFile = pcapFile;
 		initPcapFile();
+		loop = 1;
 	}
 
 	private void initPcapFile() {
@@ -57,10 +61,19 @@ public class PacketSniffer extends Thread {
 
 	public void run() {
 		if(jpacketHandler != null) {
-			pcap.loop(Pcap.LOOP_INFINITE, jpacketHandler, "JGroupsAnalyser");
+			if(loop == -1) {
+				pcap.loop(Pcap.LOOP_INFINITE, jpacketHandler, "JGroupsAnalyser");
+				
+			}
+			if(loop == 1) {
+				int r = 0;
+				while((r = pcap.dispatch(loop, jpacketHandler, "JGroupsAnalyser")) != 0) {
+					nbPackets ++;
+				} 
+				System.out.println("erreur pcap return : " + r);
+			}
 		}
-
-		
+		System.out.println("ending load of " + nbPackets);
 	}
 	
 	public Pcap getPcap() {

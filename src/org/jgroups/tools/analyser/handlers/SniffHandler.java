@@ -1,5 +1,6 @@
 package org.jgroups.tools.analyser.handlers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -10,6 +11,7 @@ import org.eclipse.core.commands.IHandlerListener;
 import org.eclipse.core.commands.State;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
@@ -47,16 +49,24 @@ public class SniffHandler extends AbstractHandler {
 	    NicChooserDialog nicDialog = new NicChooserDialog(window.getShell());
 	    nicDialog.open();
 
-		Shell shell = null;
-		try {
-			shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
-		} catch (ExecutionException e) {
-			MessageDialog.openInformation(shell, "Preferences Error", e.getMessage());
-		}
+//		Shell shell = null;
+//		try {
+//			shell = HandlerUtil.getActiveWorkbenchWindowChecked(event).getShell();
+//		} catch (ExecutionException e) {
+//			MessageDialog.openInformation(shell, "Preferences Error", e.getMessage());
+//		}
 		
 		IPcapService p = (IPcapService) PlatformUI.getWorkbench().getService(IPcapService.class);
 	    PcapIf nic = nicDialog.getNicChoosen();
 	    LinkedBlockingQueue<PcapPacket> q = new LinkedBlockingQueue<PcapPacket>();
+	    IWorkbench wb = PlatformUI.getWorkbench();
+	    IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+	    
+	    ISourceProviderService sourceProviderService = (ISourceProviderService) win.getService(ISourceProviderService.class);
+	    SourceProvider commandStateService = (SourceProvider) sourceProviderService.getSourceProvider(SourceProvider.PLAY_STATE);
+	    commandStateService.tooglePlay();
+	    commandStateService.toogleStop();
+	    commandStateService.toogleLoad();
 	    
 		PacketSniffer packetSniffer = new PacketSniffer(nic);
 		p.setPcapHandler(packetSniffer);
@@ -64,17 +74,11 @@ public class SniffHandler extends AbstractHandler {
 		
 		MyPcapPacketHandler handler = new MyPcapPacketHandler(q);
 
-		ProcessPacketHandler pph =  new ProcessPacketHandler(pv,q, 200 );
+		ProcessPacketHandler pph =  new ProcessPacketHandler(pv,q, commandStateService);
 		p.setProcessPacketHandler(pph);
 		packetSniffer.setPacketHandler(handler);
 		packetSniffer.start();
-		
 		pph.start();
-
-		ISourceProviderService sourceProviderService = (ISourceProviderService) HandlerUtil.getActiveWorkbenchWindow(event).getService(
-				ISourceProviderService.class);
-		SourceProvider commandStateService = (SourceProvider) sourceProviderService.getSourceProvider(SourceProvider.PLAY_STATE);
-		commandStateService.toogleStopEnabled();	
 
 		return null;
 	}

@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -105,6 +106,14 @@ public class PacketTableView extends ViewPart {
 			column.getColumn().setMoveable(true);
 		}
 		
+//		viewer.addFilter(new ViewerFilter() {
+//			
+//			@Override
+//			public boolean select(Viewer viewer, Object parentElement, Object element) {
+//				return false;
+//			}
+//		});
+//		
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		

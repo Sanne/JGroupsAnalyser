@@ -44,8 +44,9 @@ public class StopHandler implements IHandler {
 		ISourceProviderService sourceProviderService = (ISourceProviderService) HandlerUtil.getActiveWorkbenchWindow(event).getService(
 				ISourceProviderService.class);
 		SourceProvider commandStateService = (SourceProvider) sourceProviderService.getSourceProvider(SourceProvider.PLAY_STATE);
-		commandStateService.tooglePlayEnabled();	
-		commandStateService.toogleLoadEnabled();
+		commandStateService.tooglePlay();	
+		commandStateService.toogleStop();
+		commandStateService.toogleLoad();
 		
 		return null;
 	}

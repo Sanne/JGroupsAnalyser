@@ -44,24 +44,20 @@ public class SourceProvider extends AbstractSourceProvider {
 		return new String[] { PLAY_STATE, STOP_STATE };
 	}
 
-	public void tooglePlayEnabled() {
-		playenabled = true;
-		stopenabled = false;
+	public void tooglePlay() {
+		playenabled = ! playenabled;
 		toggleEnabled();
 	}
 
-	public void toogleLoadEnabled() {
-		loadenabled = true;
-		stopenabled = false;
+	public void toogleLoad() {
+		loadenabled = ! loadenabled;
 		toggleEnabled();
 	}
 
 	
 	
-	public void toogleStopEnabled() {
-		playenabled = false;
-		loadenabled = false;
-		stopenabled = true;
+	public void toogleStop() {
+		stopenabled = ! stopenabled;
 		toggleEnabled();
 	}
 
